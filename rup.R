@@ -5,12 +5,28 @@ library(reshape2)
 library(tidyr)
 library(pheatmap)
 library(Rfastp)
+library(getopt)
 
 theme_set(theme_bw())
 
-n_threads             <- 32 
+spec = matrix(c(
+  'datafolder' , 'd', 1, "character",
+  'threads', 't', 1, "integer",
+  'help', 'h', 0, "character"
+), byrow=TRUE, ncol=4)
+opt = getopt(spec)
 
-source_folder         <- "/var/scratch/orupp/RNAseqQC"
+if ( !is.null(opt$help) ) {
+  cat(getopt(spec, usage=TRUE))
+  q(status=1)
+}
+
+n_threads     <- 1
+source_folder <- "."
+
+if (!is.null(opt$threads)) n_threads <- opt$threads
+if (!is.null(opt$datafolder)) source_folder <- opt$datafolder
+message("")
 
 setwd(source_folder)
 
@@ -29,6 +45,11 @@ trimmed_read_folder   <- file.path(results_folder,   "trimmed")
 bam_folder            <- file.path(results_folder,   "bam")
 
 sample_prefixes       <- gsub("_1.fq.gz", "", (list.files(read_file_folder, pattern = "*_1.fq.gz")))
+
+if(!file.exists(annotation_file)) {
+    message("annotation file missing [annotation.gtf]")
+    quit(status=1)
+}
 
 
 for(folder in c(results_folder, fastqc_folder, trimmed_fastqc_folder, trimmed_read_folder, bam_folder)) {
@@ -50,18 +71,11 @@ pdf("RNAseq_QC.pdf", w=18, h=12)
 #### fastqc raw data
 
 message("running fastqc ...")
-fastqc(fq.dir=read_file_folder, qc.dir=fastqc_folder, threads=n_threads)
+### fastqc(fq.dir=read_file_folder, qc.dir=fastqc_folder, threads=n_threads)
 
-qc <- qc_aggregate(fastqc_folder)
+qc <- qc_aggregate(fastqc_folder, progress=F)
 qc$tot.seq <- as.numeric(qc$tot.seq)
-
-
-# read_number_plot <- ggplot(qc[qc$module == "Basic Statistics",], aes(x=sample, y=tot.seq)) + geom_bar(stat="identity") + ggtitle("raw read number")
-# read_pct_dup_plot <- ggplot(qc[qc$module == "Basic Statistics",], aes(x=sample, y=pct.dup)) + geom_bar(stat="identity") + ggtitle("raw read duplication")
-
-# print(read_number_plot)
-# print(read_pct_dup_plot)
-
+qc$sample = gsub(".f(ast)?q.gz", "" , qc$sample)
 
 
 #########################################################################################################
@@ -83,24 +97,27 @@ for(prefix in sample_prefixes) {
 
 #########################################################################################################
 #### fastqc trimmed data
-fastqc(fq.dir=trimmed_read_folder, qc.dir=trimmed_fastqc_folder, threads=n_threads)
+### fastqc(fq.dir=trimmed_read_folder, qc.dir=trimmed_fastqc_folder, threads=n_threads)
 
-qc_trimmed <- qc_aggregate(trimmed_fastqc_folder)
+qc_trimmed <- qc_aggregate(trimmed_fastqc_folder, progress=F)
 qc_trimmed$tot.seq <- as.numeric(qc_trimmed$tot.seq)
+qc_trimmed$sample = gsub("_R([12])", "_\\1" , qc_trimmed$sample)
 
-# read_number_plot <- ggplot(qc_trimmed[qc_trimmed$module == "Basic Statistics",], aes(x=sample, y=tot.seq)) + geom_bar(stat="identity") + ggtitle("trimmed reaad number")
-# read_pct_dup_plot <- ggplot(qc_trimmed[qc_trimmed$module == "Basic Statistics",], aes(x=sample, y=pct.dup)) + geom_bar(stat="identity") + ggtitle("trimmed read duplication")
-
-qc$reads = "raw"
-qc_trimmed$reads = "trimmed"
+qc$Trimming = "raw"
+qc_trimmed$Trimming = "trimmed"
 
 qc_all = rbind(qc, qc_trimmed)
 
-read_number_plot <- ggplot(qc_all[qc_all$module == "Basic Statistics",], aes(x=sample, y=tot.seq, fill=reads)) + geom_bar(stat="identity") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) + ggtitle("read number")
+message(head(qc_all))
 
+read_number_plot <- ggplot(qc_all, aes(x=sample, y=tot.seq, fill=Trimming)) + 
+  geom_bar(stat="identity", position = "dodge") + 
+  xlab("Samples") + ylab("Number of Reads") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 0)) +
+  theme(text = element_text(size = 18)) + 
+  ggtitle("Number of reads before and afer trimming")
 print(read_number_plot)
-
+ 
 
 #########################################################################################################
 #
@@ -111,7 +128,9 @@ print(read_number_plot)
 #########################################################################################################
 ### read alignment
 
-buildindex(file.path(reference_folder,"subread.index"), genome_fasta_file)
+if(!file.exists(file.path(reference_folder,"subread.index.reads"))) {
+  buildindex(file.path(reference_folder,"subread.index"), genome_fasta_file)
+}
 
 for(prefix in sample_prefixes) {
   message(prefix)
@@ -141,41 +160,32 @@ for(prefix in sample_prefixes) {
 
 bam_file <- list.files(bam_folder, pattern = "*.bam$")
 
-gene_counts = featureCounts(file.path(bam_folder, bam_file),
-                            annot.ext              = annotation_file,
-                            isGTFAnnotationFile    = TRUE,
-                            countMultiMappingReads = FALSE,
-                            strandSpecific         = 0,
-                            isPairedEnd            = TRUE,
-                            nthreads               = n_threads)
+gene_feature_counts = featureCounts(file.path(bam_folder, bam_file),
+                                    annot.ext              = annotation_file,
+                                    isGTFAnnotationFile    = TRUE,
+                                    countMultiMappingReads = FALSE,
+                                    strandSpecific         = 0,
+                                    isPairedEnd            = TRUE,
+                                    nthreads               = n_threads)
 
 
-rrna_counts = featureCounts(file.path(bam_folder, bam_file),
-                            annot.ext              = rrna_file,
-                            isGTFAnnotationFile    = TRUE,
-                            countMultiMappingReads = TRUE,
-                            fraction               = TRUE,
-                            strandSpecific         = 0,
-                            isPairedEnd            = TRUE,
-                            nthreads               = n_threads)
-
-#rrna_counts_u = featureCounts(file.path(bam_folder, bam_file),
-#                            annot.ext              = rrna_file,
-#                            isGTFAnnotationFile    = TRUE,
-#                            countMultiMappingReads = FALSE,
-#                            fraction               = FALSE,
-#                            strandSpecific         = 0,
-#                            isPairedEnd            = TRUE,
-#                            nthreads               = n_threads)
-
+if(file.exists(rrna_file)) {
+    rrna_feature_counts = featureCounts(file.path(bam_folder, bam_file),
+                                        annot.ext              = rrna_file,
+                                        isGTFAnnotationFile    = TRUE,
+                                        countMultiMappingReads = TRUE,
+                                        fraction               = TRUE,
+                                        strandSpecific         = 0,
+                                        isPairedEnd            = TRUE,
+                                        nthreads               = n_threads)
+} 
 
 
 
 #########################################################################################################
 ### mapping counts
 
-gene_count_stats <- gene_counts$stat
-rrna_count_stats <- rrna_counts$stat
+gene_count_stats <- gene_feature_counts$stat
 
 rownames(gene_count_stats) <- gene_count_stats$Status
 gene_count_stats <- gene_count_stats[,seq(2, ncol(gene_count_stats))]
@@ -191,78 +201,83 @@ transformed_stats$Sample <- factor(transformed_stats$Sample,
                                   levels = rev(levels(transformed_stats$Sample)[order(as.character(transformed_stats$Sample))]))
 
 transformed_stats <- transformed_stats[transformed_stats$Alignments > 0,]
-
-#mapping_stats_plot <- ggplot(data = transformed_stats, aes(x = Sample, y = Alignments)) +
-#  geom_col(aes(fill = Group), width = 0.7)+
-#  theme_bw() +
-#  theme(axis.text.x = element_text(angle = -22.5, hjust = 0, size=12))
-#print(mapping_stats_plot)
-
+transformed_stats$Reference = "Genes"
 
 
 #########################################################################################################
 # rRNA counts
 
-rrna_counts = as.data.frame(t(rrna_count_stats[rrna_count_stats$Status == "Assigned",2:ncol(rrna_count_stats)]))
-colnames(rrna_counts) = "Alignments"
-
-rrna_counts$Sample = rownames(rrna_counts)
-rrna_counts$Group = "rRNA"
-
-# ggplot(rrna_counts, aes(y = Alignments, x = Sample)) + geom_bar(stat = "identity")
-
-
-d = rbind(transformed_stats, rrna_counts)
+if(file.exists(rrna_file)) {
+    rrna_count_stats <- rrna_feature_counts$stat
+    colnames(rrna_count_stats) <- gsub(".bam", "", colnames(rrna_count_stats))
+    
+    rrna_counts = as.data.frame(t(rrna_count_stats[rrna_count_stats$Status == "Assigned",2:ncol(rrna_count_stats)]))
+    colnames(rrna_counts) = "Alignments"
+    
+    rrna_counts$Sample = rownames(rrna_counts)
+    rrna_counts$Group = "rRNA"
+    rrna_counts$Reference = "rRNA"
+    
+    d = rbind(transformed_stats, rrna_counts)
+} else {
+    d = transformed_stats
+}
 
 rrna_contamination_plot = ggplot(data = d, aes(x = Sample, y = Alignments)) +
-  geom_col(aes(fill = Group), width = 0.7)+
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = -22.5, hjust = 0, size=12))
+  geom_col(aes(fill = Group), width = 0.7) +
+  theme_bw() + facet_wrap(~Reference) + 
+  ylab("Number of Alignments") + xlab("Samples") +
+  ggtitle("Read Mapping Numbers") +
+  theme(text = element_text(size = 18)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 0))
 print(rrna_contamination_plot)
-
-
+ 
 
 #########################################################################################################
 # reads per gene
 
-gene_count_matrix = gene_counts$counts
+gene_count_matrix = gene_feature_counts$counts
+colnames(gene_count_matrix) = gsub(".bam", "", colnames(gene_count_matrix))
 
-df = data.frame("0"=colSums(gene_count_matrix == 0),
-                "1"=colSums(gene_count_matrix >= 1 & gene_count_matrix < 10),
-                "10"=colSums(gene_count_matrix >= 10 & gene_count_matrix < 100),
-                "100"=colSums(gene_count_matrix >= 100 & gene_count_matrix < 1000),
-                "1000"=colSums(gene_count_matrix >= 1000))
+df = data.frame("G0"=colSums(gene_count_matrix == 0),
+                "G1"=colSums(gene_count_matrix >= 1 & gene_count_matrix < 10),
+                "G10"=colSums(gene_count_matrix >= 10 & gene_count_matrix < 100),
+                "G100"=colSums(gene_count_matrix >= 100 & gene_count_matrix < 1000),
+                "G1000"=colSums(gene_count_matrix >= 1000))
 
 df$Sample = rownames(df)
 
-gene_coverage_plot <- ggplot(melt(df), aes(x=Sample, y=value, fill=variable)) + geom_bar(stat="identity")
+dfm = melt(df)
+
+dfm$variable = as.character(dfm$variable)
+
+dfm[dfm$variable == "G0",]$variable = "No reads"
+dfm[dfm$variable == "G1",]$variable = "1 to 10 reads"
+dfm[dfm$variable == "G10",]$variable = "10 to 100 reads"
+dfm[dfm$variable == "G100",]$variable = "100 to 1000 reads"
+dfm[dfm$variable == "G1000",]$variable = "more than 1000 reads"
+
+dfm$variable = factor(dfm$variable, levels=c("No reads", "1 to 10 reads", "10 to 100 reads", "100 to 1000 reads", "more than 1000 reads"))
+
+gene_coverage_plot <- ggplot(dfm, aes(x=Sample, y=value, fill=variable)) + 
+  geom_bar(stat="identity") +
+  ylab("Number of Genes") + xlab("Samples") +
+  ggtitle("Number of Reads per Gene") +
+  guides(fill=guide_legend(title="Number of assigned reads")) + 
+  theme(text = element_text(size = 18)) + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 0))
 print(gene_coverage_plot)
 
 #########################################################################################################
 # normalization
 
-Length_kb = gene_counts$annotation$Length / 1000
-RPK = gene_counts$counts / Length_kb
+Length_kb = gene_feature_counts$annotation$Length / 1000
+RPK = gene_feature_counts$counts / Length_kb
+colnames(RPK) = gsub(".bam", "", colnames(RPK))
 scaling_factors = colSums(RPK) / 1e6
 TPM = RPK / scaling_factors
 
-
-#top_TPM = TPM[rowSums(TPM) > 10 & sum(TPM > 5) > 5,]
-
-print(pheatmap(cor(log2(TPM+1))))
-
-
-# tpm_centered <- t(TPM-rowMeans(TPM))
-# tpm_svd <- svd(tpm_centered)
-# plot(tpm_svd$u[,1], tpm_svd$u[,2])
-# tpm_prcomp <- prcomp(tpm_centered)
-# plot(tpm_prcomp$x[,1], tpm_prcomp$x[,2])
-
-# head(tpm_prcomp$x[,1])
-
-# plot_df <- data.frame(PC1 = tpm_prcomp$x[,1], PC2 = tpm_prcomp$x[,2], Samples = rownames(tpm_prcomp$x))
-# pca_plot <- ggplot(plot_df, aes(x = PC1, y = PC2, col = Samples)) + geom_point()
-
+print(pheatmap(cor(log2(TPM+1)), fontsize = 18, main="Sample Correlation Heatmap"))
 
 dev.off()
 
