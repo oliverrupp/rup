@@ -1,13 +1,4 @@
-library(ggplot2)
-library(fastqcr)
-library(Rsubread)
-library(reshape2)
-library(tidyr)
-library(pheatmap)
-library(Rfastp)
 library(getopt)
-
-theme_set(theme_bw())
 
 spec = matrix(c(
   'datafolder' , 'd', 1, "character",
@@ -16,19 +7,11 @@ spec = matrix(c(
 ), byrow=TRUE, ncol=4)
 opt = getopt(spec)
 
-if ( !is.null(opt$help) ) {
-  cat(getopt(spec, usage=TRUE))
-  q(status=1)
-}
-
 n_threads     <- 1
-source_folder <- "."
+source_folder <-"."
 
 if (!is.null(opt$threads)) n_threads <- opt$threads
-if (!is.null(opt$datafolder)) source_folder <- opt$datafolder
-message("")
-
-setwd(source_folder)
+if (!is.null(opt$datafolder)) setwd(opt$datafolder)
 
 reference_folder      <- file.path(source_folder, "reference")
 read_file_folder      <- file.path(source_folder, "reads")
@@ -45,19 +28,55 @@ trimmed_read_folder   <- file.path(results_folder,   "trimmed")
 bam_folder            <- file.path(results_folder,   "bam")
 counts_folder         <- file.path(results_folder,   "counts")
 
-sample_prefixes       <- gsub("_1.fq.gz", "", (list.files(read_file_folder, pattern = "*_1.fq.gz")))
+sample_prefixes       <- gsub("_1.f(ast)?q.gz", "", (list.files(read_file_folder, pattern = "*_1.f(ast)?q.gz")))
 
-if(!file.exists(annotation_file)) {
-    message("annotation file missing [annotation.gtf]")
-    quit(status=1)
+error <- FALSE
+help  <- !is.null(opt$help)
+
+if(!help && !file.exists(genome_fasta_file)) {
+    message(paste0("ERROR: genome FASTA file is file missing [",genome_fasta_file,"]!"))
+    error <- TRUE
 }
 
+if(!help && !file.exists(annotation_file)) {
+    message(paste0("ERROR: annotation GTF file is file missing [",annotation_file,"]!"))
+    error <- TRUE
+}
+
+if(!help && length(sample_prefixes) == 0) {
+    message(paste0("ERROR: no FASTQ file found in ",read_file_folder,"!"))
+    error <- TRUE
+}
+
+if(error || help) {
+    message()
+    cat(getopt(spec, usage=TRUE))
+    message()
+    message("Options:")
+    message(" -d [folder] location of the data folder")
+    message(" -t [number] number of threads to use")
+    message(" -h          print this help message")
+    message()
+    q(status=1)
+}
 
 for(folder in c(results_folder, fastqc_folder, trimmed_fastqc_folder, trimmed_read_folder, bam_folder, counts_folder)) {
   if(!dir.exists(folder)) {
     dir.create(folder)
   }
 }
+
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(reshape2))
+
+library(pheatmap)
+library(fastqcr)
+library(Rfastp)
+library(Rsubread)
+
+theme_set(theme_bw())
+
+
 
 pdf("RNAseq_QC.pdf", w=18, h=12)
 
@@ -72,7 +91,7 @@ pdf("RNAseq_QC.pdf", w=18, h=12)
 #### fastqc raw data
 
 message("running fastqc ...")
-### fastqc(fq.dir=read_file_folder, qc.dir=fastqc_folder, threads=n_threads)
+fastqc(fq.dir=read_file_folder, qc.dir=fastqc_folder, threads=n_threads)
 
 qc <- qc_aggregate(fastqc_folder, progress=F)
 qc$tot.seq <- as.numeric(qc$tot.seq)
@@ -86,10 +105,15 @@ for(prefix in sample_prefixes) {
   outputPrefix <- file.path(trimmed_read_folder, prefix)
 
   if(!file.exists(paste(outputPrefix,"_R1.fastq.gz", sep=""))) {
-     message(paste(outputPrefix,"_R1.fastq.gz", sep=""))
-    fastp_stats <- rfastp(read1 = file.path(read_file_folder, paste(prefix, "_1.fq.gz", sep="")),
-                          read2 = file.path(read_file_folder, paste(prefix, "_2.fq.gz", sep="")),
-			  minReadLength = 25,
+
+    read1 = file.path(read_file_folder, paste(prefix, "_1.fastq.gz", sep=""))
+    read2 = file.path(read_file_folder, paste(prefix, "_2.fastq.gz", sep=""))
+    if(!file.exists(read1)) { read1 = file.path(read_file_folder, paste(prefix, "_1.fq.gz", sep="")) }
+    if(!file.exists(read2)) { read2 = file.path(read_file_folder, paste(prefix, "_2.fq.gz", sep="")) }
+    
+    fastp_stats <- rfastp(read1 = read1,
+                          read2 = read2,
+			                    minReadLength = 25,
                           outputFastq = outputPrefix, thread = n_threads)
   }
 }
@@ -98,7 +122,7 @@ for(prefix in sample_prefixes) {
 
 #########################################################################################################
 #### fastqc trimmed data
-### fastqc(fq.dir=trimmed_read_folder, qc.dir=trimmed_fastqc_folder, threads=n_threads)
+fastqc(fq.dir=trimmed_read_folder, qc.dir=trimmed_fastqc_folder, threads=n_threads)
 
 qc_trimmed <- qc_aggregate(trimmed_fastqc_folder, progress=F)
 qc_trimmed$tot.seq <- as.numeric(qc_trimmed$tot.seq)
