@@ -43,6 +43,7 @@ fastqc_folder         <- file.path(results_folder,   "fastqc")
 trimmed_fastqc_folder <- file.path(results_folder,   "trimmed_fastqc")
 trimmed_read_folder   <- file.path(results_folder,   "trimmed")
 bam_folder            <- file.path(results_folder,   "bam")
+counts_folder         <- file.path(results_folder,   "counts")
 
 sample_prefixes       <- gsub("_1.fq.gz", "", (list.files(read_file_folder, pattern = "*_1.fq.gz")))
 
@@ -52,7 +53,7 @@ if(!file.exists(annotation_file)) {
 }
 
 
-for(folder in c(results_folder, fastqc_folder, trimmed_fastqc_folder, trimmed_read_folder, bam_folder)) {
+for(folder in c(results_folder, fastqc_folder, trimmed_fastqc_folder, trimmed_read_folder, bam_folder, counts_folder)) {
   if(!dir.exists(folder)) {
     dir.create(folder)
   }
@@ -186,6 +187,7 @@ if(file.exists(rrna_file)) {
 ### mapping counts
 
 gene_count_stats <- gene_feature_counts$stat
+colnames(gene_feature_counts$counts) = gsub(".bam", "", colnames(gene_feature_counts$counts))
 
 rownames(gene_count_stats) <- gene_count_stats$Status
 gene_count_stats <- gene_count_stats[,seq(2, ncol(gene_count_stats))]
@@ -273,9 +275,11 @@ print(gene_coverage_plot)
 
 Length_kb = gene_feature_counts$annotation$Length / 1000
 RPK = gene_feature_counts$counts / Length_kb
-colnames(RPK) = gsub(".bam", "", colnames(RPK))
 scaling_factors = colSums(RPK) / 1e6
 TPM = RPK / scaling_factors
+
+write.table(gene_feature_counts$counts, file=file.path(counts_folder, "feature.counts.tsv"), quote=FALSE, sep='\t')
+write.table(TPM, file=file.path(counts_folder, "TPM.normalized.tsv"), quote=FALSE, sep='\t')
 
 print(pheatmap(cor(log2(TPM+1)), fontsize = 18, main="Sample Correlation Heatmap"))
 
