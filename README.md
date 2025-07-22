@@ -14,15 +14,15 @@ Pipeline to evaluate the quality of RNA sequencing reads for differential expres
 
 The pipeline is implemented in R and depends on several R packages:
 
- - getopt [CRAN](https://cran.r-project.org/web/packages/getopt/index.html)
- - ggplot2 [CRAN](https://cran.r-project.org/web/packages/ggplot2/index.html)
- - reshape2 [CRAN](https://cran.r-project.org/web/packages/reshape2/index.html)
- - pheatmap [CRAN](https://cran.r-project.org/web/packages/pheatmap/index.html)
- - fastqcr [CRAN](https://cran.r-project.org/web/packages/fastqcr/index.html)
- - Rfastp [DOI](10.18129/B9.bioc.Rfastp)
- - Rsubread [DOI](10.18129/B9.bioc.Rsubread)
+ - getopt ([CRAN](https://cran.r-project.org/web/packages/getopt/index.html))
+ - ggplot2 ([CRAN](https://cran.r-project.org/web/packages/ggplot2/index.html))
+ - reshape2 ([CRAN](https://cran.r-project.org/web/packages/reshape2/index.html))
+ - pheatmap ([CRAN](https://cran.r-project.org/web/packages/pheatmap/index.html))
+ - fastqcr ([CRAN](https://cran.r-project.org/web/packages/fastqcr/index.html))
+ - Rfastp ([DOI](10.18129/B9.bioc.Rfastp))
+ - Rsubread ([DOI](10.18129/B9.bioc.Rsubread))
  
-All packages can be installed with Bioconductor: 
+All packages can be installed with [Bioconductor](https://bioconductor.org/): 
 
 ```R
 if (!require("BiocManager", quietly = TRUE))
