@@ -14,13 +14,13 @@ Pipeline to evaluate the quality of RNA sequencing reads for differential expres
 
 The pipeline is implemented in R and depends on several R packages:
 
- - getopt
- - ggplot2
- - reshape2
- - pheatmap
- - fastqcr
- - Rfastp
- - Rsubread
+ - getopt [CRAN](https://cran.r-project.org/web/packages/getopt/index.html)
+ - ggplot2 [CRAN](https://cran.r-project.org/web/packages/ggplot2/index.html)
+ - reshape2 [CRAN](https://cran.r-project.org/web/packages/reshape2/index.html)
+ - pheatmap [CRAN](https://cran.r-project.org/web/packages/pheatmap/index.html)
+ - fastqcr [CRAN](https://cran.r-project.org/web/packages/fastqcr/index.html)
+ - Rfastp [DOI](10.18129/B9.bioc.Rfastp)
+ - Rsubread [DOI](10.18129/B9.bioc.Rsubread)
  
 All packages can be installed with Bioconductor: 
 
@@ -96,18 +96,28 @@ The sequencing read files should be located in the `reads` folder.
 
 # Results
 
+The pipeline produces a PDF file (`RNAseq_QC.pdf`) in the data folder with the following analyses.
+
 ## sequencing quality 
 
 ![Number of reads before and after trimming](https://github.com/oliverrupp/rup/blob/main/images/Fig2.png?raw=true)
+
+Assessment of the number of reads sequenced and remaining reads after trimming and filtering. 
 
 ## mapping quality
 
 ![Read Mapping Number](https://github.com/oliverrupp/rup/blob/main/images/Fig3.png?raw=true)
 
+Assessment of the number of reads that could be assigned uniquely to a single gene.
+
 ## number of captured genes
 
 ![Number of Reads per Gene](https://github.com/oliverrupp/rup/blob/main/images/Fig4.png?raw=true)
 
+Overview of the number of reads assigned to each gene.
+
 ## replicate quality
 
 ![Sample Correlation](https://github.com/oliverrupp/rup/blob/main/images/Fig5.png?raw=true)
+
+Clustered heatmap of the replicate correlations
