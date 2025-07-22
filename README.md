@@ -38,11 +38,11 @@ fastqcr::fastqc_install()
 
 All input files should be located relative to the data folder:
 
- - reference/genome.fa [genome FASTA file]
- - reference/annotation.gtf [gene model GTF file]
- - reference/rRNA.gtf [rRNA genes GTF file]
- - reference/samples.tsv [replicate to sample mapping]
- - reads/PREFIX\_1.fastq.gz and reads/PREFIX\_2.fastq.gz
+ - `reference/genome.fa` [genome FASTA file]
+ - `reference/annotation.gtf` [gene model GTF file]
+ - `reference/rRNA.gtf` [rRNA genes GTF file]
+ - `reference/samples.tsv` [replicate to sample mapping]
+ - `reads/PREFIX\_1.fastq.gz` and `reads/PREFIX\_2.fastq.gz`
 
 ```bash
 Usage: Rscript rup.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-help|h]]
