@@ -10,6 +10,9 @@ Pipeline to evaluate the quality of RNA sequencing reads for differential expres
  - sequencing reads in FASTQ.gz format
  - replicate to sample information in TSV format
 
+![RNAseq usability pipeline](https://github.com/oliverrupp/rup/blob/main/images/Fig1.png?raw=true)
+
+
 # Installation
 
 The pipeline is implemented in R and depends on several R packages:
