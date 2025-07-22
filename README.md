@@ -95,3 +95,19 @@ The sequencing read files should be located in the `reads` folder.
 
 
 # Results
+
+## sequencing quality 
+
+![Number of reads before and after trimming](https://github.com/oliverrupp/rup/blob/main/images/Fig2.png?raw=true)
+
+## mapping quality
+
+![Read Mapping Number](https://github.com/oliverrupp/rup/blob/main/images/Fig3.png?raw=true)
+
+## number of captured genes
+
+![Number of Reads per Gene](https://github.com/oliverrupp/rup/blob/main/images/Fig4.png?raw=true)
+
+## replicate quality
+
+![Sample Correlation](https://github.com/oliverrupp/rup/blob/main/images/Fig5.png?raw=true)
