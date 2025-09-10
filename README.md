@@ -78,7 +78,7 @@ The genome sequence must be provided in a single, uncompressed FASTA file.
 ## reference/annotation.gtf
 
 The annotation should be in GTF format.
-If only a GFF(3) format is available, the file can be converted to GTF using gffread
+If only a GFF(3) format is available, the file can be converted to GTF using [gffread](https://github.com/gpertea/gffread)
 
 ```bash
 gffread reference/annotation.gff3 -T -o reference/annotation.gtf
@@ -86,7 +86,7 @@ gffread reference/annotation.gff3 -T -o reference/annotation.gtf
 
 ## reference/rRNA.gtf
 
-rRNA genes can be predicted using barrnap and the provided barrnap2gtf.pl script.
+rRNA genes can be predicted using [barrnap](https://github.com/tseemann/barrnap) and the provided `barrnap2gtf.pl` script.
 
 ```bash
 barrnap --kingdom euk --threads 1 reference/genome.fa > reference/barrnap.gff
