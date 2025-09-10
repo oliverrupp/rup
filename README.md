@@ -55,6 +55,7 @@ All input files should be located relative to the data folder:
 <!-- - `reference/samples.tsv` [replicate to sample mapping] -->
  - `reads/PREFIX_1.fastq.gz` and `reads/PREFIX_2.fastq.gz`
 
+
 ```bash
 Usage: Rscript rup.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-help|h]]
 
@@ -70,6 +71,25 @@ Options:
 ```
 
 # Prepare Files
+
+The data folder setup should look like this:
+
+```bash
+datafolder
+├── reads
+│   ├── s1_r1_1.fq.gz
+│   ├── s1_r1_2.fq.gz
+│   ├── s1_r2_1.fq.gz
+│   ├── s1_r2_2.fq.gz
+│   ├── s2_r1_1.fq.gz
+│   ├── s2_r1_2.fq.gz
+│   ├── s2_r2_1.fq.gz
+│   ├── s2_r2_2.fq.gz
+└── reference
+    ├── annotation.gtf
+    ├── genome.fa
+    └── rRNA.gtf
+```
 
 ## reference/genome.fa
 
