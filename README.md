@@ -74,7 +74,7 @@ datafolder/
  - `reads/PREFIX_1.fastq.gz` and `reads/PREFIX_2.fastq.gz`
 
 
-```bash
+```
 Usage: Rscript rup.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-help|h]]
 
 Options:
