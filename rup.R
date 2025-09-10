@@ -35,7 +35,7 @@ results_folder        <- file.path(source_folder, "results")
 genome_fasta_file     <- file.path(reference_folder, "genome.fa")
 annotation_file       <- file.path(reference_folder, "annotation.gtf")
 rrna_file             <- file.path(reference_folder, "rRNA.gtf")
-samples_file          <- file.path(reference_folder, "samples.txt")
+### samples_file          <- file.path(reference_folder, "samples.txt")
 
 fastqc_folder         <- file.path(results_folder,   "fastqc")
 trimmed_fastqc_folder <- file.path(results_folder,   "trimmed_fastqc")

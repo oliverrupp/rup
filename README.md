@@ -8,7 +8,7 @@ Pipeline to evaluate the quality of RNA sequencing reads for differential expres
  - gene model annotation in GTF format
  - (optional) rRNA annotation in GTF format
  - sequencing reads in FASTQ.gz format
- - replicate to sample information in TSV format
+ <!-- - replicate to sample information in TSV format --> 
 
 ![RNAseq usability pipeline](https://github.com/oliverrupp/rup/blob/main/images/Fig1.png?raw=true)
 
@@ -52,7 +52,7 @@ All input files should be located relative to the data folder:
  - `reference/genome.fa` [genome FASTA file]
  - `reference/annotation.gtf` [gene model GTF file]
  - `reference/rRNA.gtf` [rRNA genes GTF file]
- - `reference/samples.tsv` [replicate to sample mapping]
+<!-- - `reference/samples.tsv` [replicate to sample mapping] -->
  - `reads/PREFIX_1.fastq.gz` and `reads/PREFIX_2.fastq.gz`
 
 ```bash
@@ -94,6 +94,7 @@ barrnap --kingdom euk --threads 1 reference/genome.fa > reference/barrnap.gff
 perl barrnap2gtf.pl reference/barrnap.gff > reference/rRNA.gtf
 ```
 
+<!--
 ## reference/samples.tsv
 
 A tab-delimited file with the sample names in the first column and the corresponding replicate names in the second column. The replicate names should be the same as the prefixes of the sequencing read files:
@@ -104,6 +105,7 @@ sample1<TAB>sample1_replicate2
 sample2<TAB>sample2_replicate1
 sample2<TAB>sample2_replicate2
 ```
+-->
 
 ## reads/PREFIX_[12].fastq.gz
 
