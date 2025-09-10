@@ -134,7 +134,26 @@ The sequencing read files should be located in the `reads` folder.
 
 # Results
 
-The pipeline produces a PDF file (`RNAseq_QC.pdf`) in the data folder with the following analyses.
+All results and intermediate files will be saved in the `results` subfolder:
+
+```bash
+results/
+├── trimmed/                      # FastP trimmed reads
+├── fastqc/                       # FastQC analysis of the raw reads
+├── trimmed_fastqc/               # FastQC analysis of the trimmed reads
+├── bam/                          # unsorted read alignments in BAM format
+├── sorted_bam/                   # sorted and indexed BAM files
+└── counts/
+    ├── feature.counts.tsv        # raw read counts
+    ├── TPM.normalized.tsv        # TPM normalized read counts
+    ├── sequencing_stats.tsv      # sequencing quality numbers
+    ├── mapping_stats.tsv         # mapping quality numbers
+    ├── gene_capture_stats.tsv    # number of captured genes
+    └── sample_correlation.tsv    # pair-wise sample correlations
+```
+
+
+Additionally, the pipeline produces a PDF file (`RNAseq_QC.pdf`) in the data folder with the following analyses.
 
 ## sequencing quality 
 
