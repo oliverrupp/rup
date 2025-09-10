@@ -17,13 +17,14 @@ Pipeline to evaluate the quality of RNA sequencing reads for differential expres
 
 The pipeline is implemented in R and depends on several R packages:
 
- - getopt ([CRAN](https://cran.r-project.org/web/packages/getopt/index.html))
- - ggplot2 ([CRAN](https://cran.r-project.org/web/packages/ggplot2/index.html))
- - reshape2 ([CRAN](https://cran.r-project.org/web/packages/reshape2/index.html))
- - pheatmap ([CRAN](https://cran.r-project.org/web/packages/pheatmap/index.html))
- - fastqcr ([CRAN](https://cran.r-project.org/web/packages/fastqcr/index.html))
- - Rfastp ([DOI](10.18129/B9.bioc.Rfastp))
- - Rsubread ([DOI](10.18129/B9.bioc.Rsubread))
+ - getopt (1.20.4, [CRAN](https://cran.r-project.org/web/packages/getopt/index.html))
+ - ggplot2 (3.5.2, [CRAN](https://cran.r-project.org/web/packages/ggplot2/index.html))
+ - reshape2 (1.4.4, [CRAN](https://cran.r-project.org/web/packages/reshape2/index.html))
+ - pheatmap (1.0.13, [CRAN](https://cran.r-project.org/web/packages/pheatmap/index.html))
+ - fastqcr (0.1.3, [CRAN](https://cran.r-project.org/web/packages/fastqcr/index.html))
+ - Rfastp (1.16.0, [DOI](10.18129/B9.bioc.Rfastp))
+ - Rsubread (2.20.0, [DOI](10.18129/B9.bioc.Rsubread))
+ - Rsamtools (2.22.0, [DOI](DOI: 10.18129/B9.bioc.Rsamtools))
  
 All packages can be installed with [Bioconductor](https://bioconductor.org/): 
 
@@ -32,10 +33,17 @@ if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install()
 
-BiocManager::install(c("getopt", "ggplot2", "reshape2", "pheatmap", "fastqcr", "Rfastp", "Rsubread"))
+BiocManager::install(c("getopt", "ggplot2", "reshape2", "pheatmap", "fastqcr", "Rfastp", "Rsubread", "Rsamtools"))
 
 fastqcr::fastqc_install()
 ```
+
+Alternatively, dependencies can be install with conda:
+
+```bash
+conda env create -f conda.yaml
+```
+
 
 # Usage
 
@@ -51,9 +59,14 @@ All input files should be located relative to the data folder:
 Usage: Rscript rup.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-help|h]]
 
 Options:
- -d [folder] location of the data folder
- -t [number] number of threads to use
- -h          print this help message
+ -d [folder]   location of the data folder
+ -t [number]   number of threads to use
+ -r [number]   minimum read length after trimming
+ -m [number]   maximum memory for BAM file sorting
+ -l [number]   minimum fragment length
+ -u [number]   maximum fragment length
+ -o [fr|rf|ff] paired end read orientation
+ -h            print this help message
 ```
 
 # Prepare Files
@@ -124,3 +137,17 @@ Overview of the number of reads assigned to each gene.
 ![Sample Correlation](https://github.com/oliverrupp/rup/blob/main/images/Fig5.png?raw=true)
 
 Clustered heatmap of the replicate correlations
+
+
+## RNA degradation
+
+After running the pipeline, the included script `degradation_analysis_RSeQC.pl` can be used to check RNA degradation.
+The script runs the `geneBody_coverage.py` and `tin.py` scripts from the [RSeQC package](https://rseqc.sourceforge.net/).
+
+The path to the scripts must be included in the `$PATH` variable.
+
+```bash
+perl degradation_analysis_RSeQC.pl -d <DATAFOLDER>
+```
+
+The results will be stored in the `results/rseqc` subfolder.

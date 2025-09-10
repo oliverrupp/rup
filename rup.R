@@ -71,6 +71,7 @@ if(error || help) {
     message("Options:")
     message(" -d [folder]   location of the data folder")
     message(" -t [number]   number of threads to use")
+    message(" -r [number]   minimum read length after trimming")
     message(" -m [number]   maximum memory for BAM file sorting")
     message(" -l [number]   minimum fragment length")
     message(" -u [number]   maximum fragment length")
