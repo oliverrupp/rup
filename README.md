@@ -49,6 +49,24 @@ conda env create -f conda.yaml
 
 All input files should be located relative to the data folder:
 
+
+```bash
+datafolder
+├── reads
+│   ├── s1_r1_1.fq.gz
+│   ├── s1_r1_2.fq.gz
+│   ├── s1_r2_1.fq.gz
+│   ├── s1_r2_2.fq.gz
+│   ├── s2_r1_1.fq.gz
+│   ├── s2_r1_2.fq.gz
+│   ├── s2_r2_1.fq.gz
+│   ├── s2_r2_2.fq.gz
+└── reference
+    ├── annotation.gtf
+    ├── genome.fa
+    └── rRNA.gtf
+```
+
  - `reference/genome.fa` [genome FASTA file]
  - `reference/annotation.gtf` [gene model GTF file]
  - `reference/rRNA.gtf` [rRNA genes GTF file]
@@ -72,24 +90,6 @@ Options:
 
 # Prepare Files
 
-The data folder setup should look like this:
-
-```bash
-datafolder
-├── reads
-│   ├── s1_r1_1.fq.gz
-│   ├── s1_r1_2.fq.gz
-│   ├── s1_r2_1.fq.gz
-│   ├── s1_r2_2.fq.gz
-│   ├── s2_r1_1.fq.gz
-│   ├── s2_r1_2.fq.gz
-│   ├── s2_r2_1.fq.gz
-│   ├── s2_r2_2.fq.gz
-└── reference
-    ├── annotation.gtf
-    ├── genome.fa
-    └── rRNA.gtf
-```
 
 ## reference/genome.fa
 
