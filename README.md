@@ -78,7 +78,7 @@ The genome sequence must be provided in a single, uncompressed FASTA file.
 ## reference/annotation.gtf
 
 The annotation should be in GTF format.
-If only a GFF(3) format is available, the file can be converted to GTF using [gffread](https://github.com/gpertea/gffread)
+If only a GFF(3) format is available, the file can be converted to GTF using [gffread](https://github.com/gpertea/gffread).
 
 ```bash
 gffread reference/annotation.gff3 -T -o reference/annotation.gtf
