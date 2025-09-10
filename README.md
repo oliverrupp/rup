@@ -24,7 +24,7 @@ The pipeline is implemented in R and depends on several R packages:
  - fastqcr (0.1.3, [CRAN](https://cran.r-project.org/web/packages/fastqcr/index.html))
  - Rfastp (1.16.0, [DOI](10.18129/B9.bioc.Rfastp))
  - Rsubread (2.20.0, [DOI](10.18129/B9.bioc.Rsubread))
- - Rsamtools (2.22.0, [DOI](DOI: 10.18129/B9.bioc.Rsamtools))
+ - Rsamtools (2.22.0, [DOI](10.18129/B9.bioc.Rsamtools))
  
 All packages can be installed with [Bioconductor](https://bioconductor.org/): 
 
