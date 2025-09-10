@@ -53,7 +53,7 @@ All input files should be located relative to the data folder:
  - `reference/annotation.gtf` [gene model GTF file]
  - `reference/rRNA.gtf` [rRNA genes GTF file]
  - `reference/samples.tsv` [replicate to sample mapping]
- - `reads/PREFIX\_1.fastq.gz` and `reads/PREFIX\_2.fastq.gz`
+ - `reads/PREFIX_1.fastq.gz` and `reads/PREFIX_2.fastq.gz`
 
 ```bash
 Usage: Rscript rup.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-help|h]]
@@ -81,7 +81,7 @@ The annotation should be in GTF format.
 If only a GFF(3) format is available, the file can be converted to GTF using gffread
 
 ```bash
-gffread reference/annotation.gff3 -T -o reference/annotation.gff
+gffread reference/annotation.gff3 -T -o reference/annotation.gtf
 ```
 
 ## reference/rRNA.gtf
