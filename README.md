@@ -1,6 +1,6 @@
 # rup
 
-RNAseq usability pipeline
+RNAseq usability assessment pipeline
 
 Pipeline to evaluate the quality of RNA sequencing reads for differential expression analysis using different metrics. Only a minimal input file set is needed:
 
