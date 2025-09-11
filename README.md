@@ -1,6 +1,6 @@
 # rup
 
-RNAseq usability assessment pipeline
+RNA-seq usability assessment pipeline
 
 Pipeline to evaluate the quality of RNA sequencing reads for differential expression analysis using different metrics. Only a minimal input file set is needed:
 
@@ -10,7 +10,7 @@ Pipeline to evaluate the quality of RNA sequencing reads for differential expres
  - sequencing reads in FASTQ.gz format
  <!-- - replicate to sample information in TSV format --> 
 
-![RNAseq usability pipeline](https://github.com/oliverrupp/rup/blob/main/images/Fig1.png?raw=true)
+![RNA-seq usability pipeline](https://github.com/oliverrupp/rup/blob/main/images/Fig1.png?raw=true)
 
 
 # Installation
