@@ -75,7 +75,7 @@ datafolder/
 
 
 ```
-Usage: Rscript rup.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-help|h]]
+Usage: rup.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-bamSortMemory|m] <integer>] [-[-minReadLength|r] <integer>] [-[-minFragLength|l] <integer>] [-[-maxFragLength|u] <integer>] [-[-orientation|o] <character>] [-[-stranded|s] <integer>] [-[-help|h]]
 
 Options:
  -d [folder]   location of the data folder
@@ -86,6 +86,22 @@ Options:
  -u [number]   maximum fragment length
  -o [fr|rf|ff] paired end read orientation
  -h            print this help message
+```
+
+For single-end data use the `rup_SE.R` script. Each file in the `reads` folder will be analysed separately as single-end file.
+
+```
+Usage: rup_SE.R [-[-datafolder|d] <character>] [-[-threads|t] <integer>] [-[-bamSortMemory|m] <integer>] [-[-minReadLength|r] <integer>] [-[-orientation|o] <character>] [-[-stranded|s] <integer>] [-[-help|h]]
+
+Options:
+ -d [folder]   location of the data folder
+ -t [number]   number of threads to use
+ -r [number]   minimum read length after trimming
+ -m [number]   maximum memory for BAM file sorting
+ -o [fr|rf|ff] paired end read orientation
+ -s [0|1|2]    stranded sequencing (0 (unstranded), 1 (stranded) and 2 (reversely stranded))
+ -h            print this help message
+
 ```
 
 # Prepare Files
