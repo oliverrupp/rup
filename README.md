@@ -85,6 +85,7 @@ Options:
  -l [number]   minimum fragment length
  -u [number]   maximum fragment length
  -o [fr|rf|ff] paired end read orientation
+ -s [0|1|2]    stranded sequencing (0 (unstranded), 1 (stranded) and 2 (reversely stranded))
  -h            print this help message
 ```
 

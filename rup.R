@@ -79,6 +79,7 @@ if(error || help) {
     message(" -l [number]   minimum fragment length")
     message(" -u [number]   maximum fragment length")
     message(" -o [fr|rf|ff] paired end read orientation")
+    message(" -s [0|1|2]    stranded sequencing (0 (unstranded), 1 (stranded) and 2 (reversely stranded))")
     message(" -h            print this help message")
     message()
     q(status=1)
