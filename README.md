@@ -60,7 +60,7 @@ datafolder/
 │   ├── s2_r1_1.fq.gz
 │   ├── s2_r1_2.fq.gz
 │   ├── s2_r2_1.fq.gz
-│   ├── s2_r2_2.fq.gz
+│   └── s2_r2_2.fq.gz
 └── reference/
     ├── annotation.gtf
     ├── genome.fa
