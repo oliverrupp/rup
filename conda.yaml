@@ -13,3 +13,6 @@ dependencies:
   - r-ggplot2
   - r-pheatmap
   - r-reshape2
+  - rseqc
+  - barrnap
+  - gffread
