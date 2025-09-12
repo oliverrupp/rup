@@ -8,6 +8,7 @@ spec = matrix(c(
   'minFragLength', 'l', 1, 'integer',
   'maxFragLength', 'u', 1, 'integer',
   'orientation', 'o', 1, 'character',
+  'stranded', 's', 1, 'integer',
   'help', 'h', 0, "character"
 ), byrow=TRUE, ncol=4)
 opt = getopt(spec)
@@ -19,10 +20,12 @@ minReadLength <- 25
 minFragLength <- 0
 maxFragLength <- 300
 orientation   <- "fr"
+stranded      <- 0
 
 if (!is.null(opt$threads)) n_threads <- opt$threads
 if (!is.null(opt$datafolder)) setwd(opt$datafolder)
 if (!is.null(opt$orientation)) orientation <- opt$orientation
+if (!is.null(opt$stranded)) stranded <- opt$stranded
 if (!is.null(opt$maxFragLength)) maxFragLength <- opt$maxFragLength
 if (!is.null(opt$minFragLength)) minFragLength <- opt$minFragLength
 if (!is.null(opt$minReadLength)) minReadLength <- opt$minReadLength
@@ -245,7 +248,7 @@ gene_feature_counts = featureCounts(file.path(bam_folder, bam_file),
                                     annot.ext              = annotation_file,
                                     isGTFAnnotationFile    = TRUE,
                                     countMultiMappingReads = FALSE,
-                                    strandSpecific         = 0,
+                                    strandSpecific         = stranded,
                                     isPairedEnd            = TRUE,
 				    requireBothEndsMapped  = TRUE,
 				    checkFragLength        = TRUE,
@@ -263,7 +266,7 @@ if(file.exists(rrna_file)) {
                                         isGTFAnnotationFile    = TRUE,
                                         countMultiMappingReads = TRUE,
                                         fraction               = TRUE,
-                                        strandSpecific         = 0,
+                                        strandSpecific         = stranded,
                                         isPairedEnd            = TRUE,
                                         nthreads               = n_threads)
 } 
