@@ -38,7 +38,7 @@ BiocManager::install(c("getopt", "ggplot2", "reshape2", "pheatmap", "fastqcr", "
 fastqcr::fastqc_install()
 ```
 
-Alternatively, dependencies can be install with conda:
+Alternatively, dependencies and 3rd party tools ([RSeQC](https://rseqc.sourceforge.net/), [barrnap](https://github.com/tseemann/barrnap), [gffread](https://github.com/gpertea/gffread)) can be installed with conda:
 
 ```bash
 conda env create -f conda.yaml
